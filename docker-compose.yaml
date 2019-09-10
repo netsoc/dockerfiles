@@ -1,0 +1,8 @@
+version: '3'
+services:
+  minecraft:
+    image: netsoc/spigot:latest
+    volumes:
+      - ./data:/data
+    ports:
+      - 25565:25565
