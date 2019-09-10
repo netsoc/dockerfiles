@@ -11,7 +11,7 @@ RUN apk add --no-cache curl git openjdk11-jre && \
 RUN ln -s "/opt/spigot-${SPIGOT_VERSION}.jar" /opt/spigot.jar
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
-RUN addgroup -S minecraft && adduser -h /data -s /sbin/nologin -G minecraft -S -D minecraft
+RUN addgroup -g 565 -S minecraft && adduser -h /data -s /sbin/nologin -G minecraft -S -D -u 565 minecraft
 USER minecraft:minecraft
 
 VOLUME /data
