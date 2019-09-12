@@ -1,20 +1,29 @@
-FROM alpine:3
+# spigot build stage
+FROM alpine:latest AS build-spigot
 
 ARG SPIGOT_VERSION
 
-RUN apk add --no-cache curl git openjdk11-jre && \
-    cd /opt && \
-    curl -LO https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar && \
-    java -jar BuildTools.jar --rev "$SPIGOT_VERSION" && \
-    rm -rf BuildData/ BuildTools.jar BuildTools.log.txt Bukkit/ CraftBukkit/ Spigot/ apache-maven-3.6.0/ work/ && \
-    apk del --no-cache git
-RUN ln -s "/opt/spigot-${SPIGOT_VERSION}.jar" /opt/spigot.jar
+WORKDIR /opt
+RUN apk add --no-cache curl git openjdk11-jre
+RUN curl -LO https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
+RUN java -jar BuildTools.jar --rev "$SPIGOT_VERSION"
+RUN mv "spigot-${SPIGOT_VERSION}.jar" spigot.jar
 
-COPY entrypoint.c /usr/local/bin/
-RUN apk add --no-cache musl-dev gcc && \
-    gcc -Werror -o /usr/local/bin/entrypoint /usr/local/bin/entrypoint.c && \
-    apk del --no-cache musl-dev gcc && \
-    rm /usr/local/bin/entrypoint.c
+
+# entrypoint build stage
+FROM alpine:latest AS build-entrypoint
+RUN apk add --no-cache musl-dev gcc
+COPY entrypoint.c /opt/
+RUN gcc -Werror -o /opt/entrypoint /opt/entrypoint.c
+
+
+# final image build
+FROM alpine:3
+
+RUN apk add --no-cache openjdk11-jre
+COPY --from=build-spigot /opt/spigot.jar /opt/
+
+COPY --from=build-entrypoint /opt/entrypoint /usr/local/bin/
 
 RUN addgroup -g 565 -S minecraft && adduser -h /data -s /sbin/nologin -G minecraft -S -D -u 565 minecraft
 USER minecraft:minecraft
