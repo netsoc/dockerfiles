@@ -1,7 +1,8 @@
-version: '3'
+version: '3.4'
 services:
   minecraft:
     image: netsoc/spigot:latest
+    build: .
     volumes:
       - ./data:/data
     ports:
