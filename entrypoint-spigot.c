@@ -1,5 +1,5 @@
 // This program wraps the Minecraft server (executing it as a subprocess and piping STDIN / STDOUT/ STDERR) since the
-// server doesn't save correctly upon receipt of SIGINT / SIGTERM (the wrapper injects a `/stop` command)
+// Spigot server doesn't save correctly upon receipt of SIGINT / SIGTERM (the wrapper injects a `/stop` command)
 
 #include <stdbool.h>
 #include <stdio.h>

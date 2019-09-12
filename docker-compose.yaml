@@ -1,11 +1,24 @@
 version: '3.4'
 services:
-  minecraft:
+  spigot: &minecraft
     image: netsoc/spigot:latest
-    build: .
+    build:
+      context: .
+      target: spigot
     volumes:
-      - ./data:/data
+      - ./data-spigot:/data
+    environment:
+      MAX_MEMORY: 2048M
     ports:
       - 25565:25565
     tty: true
     stdin_open: true
+  paper:
+    <<: *minecraft
+    image: netsoc/paper:latest
+    build:
+      context: .
+      target: paper
+    volumes:
+      - ./data-paper:/data
+    stop_signal: SIGINT
