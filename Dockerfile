@@ -22,7 +22,7 @@ RUN gcc -Werror -o /opt/entrypoint /opt/entrypoint.c
 # base minecraft image build
 FROM base as base-minecraft
 
-RUN apk add --no-cache openjdk11-jre
+RUN apk add --no-cache bash openjdk11-jre
 
 RUN addgroup -g 565 -S minecraft && adduser -h /data -s /sbin/nologin -G minecraft -S -D -u 565 minecraft
 
